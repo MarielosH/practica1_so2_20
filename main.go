@@ -239,11 +239,51 @@ func otro() {
 func otro2() {
 	http.HandleFunc("/cpuinfo", servecpu2)
 }
+
+
+func terminar(w http.ResponseWriter, r *http.Request) {
+	log.Println("1------------")
+	fmt.Println(r.Host)
+	ws, err := actualiza.Upgrade(w, r, nil)
+	if err != nil {
+		log.Println("2----------------")
+		log.Println(err)
+	}
+	defer ws.Close()
+	reader(ws)
+}
+
+func reader(conn *websocket.Conn) {
+	for {
+		messageType, p, err := conn.ReadMessage()
+		if err != nil {
+			log.Printf("Error socket: %v", err)
+			//delete(clients, conn)
+			break
+		}
+		fmt.Println("eliminar proceso",string(p))
+		if i, err := strconv.Atoi(string(p)); err == nil {
+			proc, err := os.FindProcess(i)
+			if err != nil {
+				log.Println(err)
+			}
+			proc.Kill()
+			log.Println("se elimino el proceso")
+		}
+		//clients[conn] = string(p)
+		if err := conn.WriteMessage(messageType, p); err != nil {
+			log.Println(err)
+			return
+		}
+	}
+}
+
 func main() {
 	fmt.Println("Puerto 3000")
 	fs := http.FileServer(http.Dir("./Frontend"))
 	http.Handle("/", fs)
 	http.HandleFunc("/memo", serveWs)
+	http.HandleFunc("/ws", terminar)
 	go otro()
 	go otro2()
 	log.Fatal(http.ListenAndServe(":3000", nil))
