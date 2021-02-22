@@ -140,6 +140,7 @@
          "<td> ";
          hijos=proceso.HIJOS;
          tablap += "<input id=\""+proceso.PID+"\""+" type=\"button\" value=\""+hijos.length+"\">";
+         tablap += "<input id=\""+proceso.PID+"\""+" type=\"button\" onClick=\"terminar(id)\" value=\""+"Terminar"+"\">";
          /*if(hijos.length>0){
            
           // console.log(hijos);          
@@ -242,7 +243,33 @@
 
         }
 
-     
+     function terminar(pid){
+          alert("Se terminara el proceso:" + pid.toString());
+          let socket = new WebSocket("ws://35.196.180.149:3000/ws");
+          var num = 0;
+          var numTotalMem = 0;
+          var tabla = [];
+          console.log("Attempting Connection...");
+
+          socket.onopen = () => {
+            console.log("Successfully Connected");
+            socket.send(pid.toString());
+          };
+
+          socket.onclose = event => {
+            console.log("Socket Closed Connection: ", event);
+          };
+
+          socket.onerror = error => {
+            console.log("Socket Error: ", error);
+          };
+
+
+          let sendMsg = msg => {
+            console.log("sending msg: ", msg);
+            socket.send(msg);
+          };
+      }
       
     </script>
 
