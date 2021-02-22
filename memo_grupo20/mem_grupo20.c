@@ -6,29 +6,35 @@
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/fs.h>
+#include <linux/swap.h>
+#include <asm/page.h>
+#include <linux/mmzone.h>
+#include <linux/cpumask.h>
+#include <linux/kernel_stat.h>
 
 #define BUFSIZE  150
 
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Ecribir informacion de la memoria ram.");
-MODULE_AUTHOR("Grupo 20");
+MODULE_AUTHOR("Grupo20");
 
 struct sysinfo inf;
 
 static int escribir_archivo(struct seq_file * archivo, void *v){
     si_meminfo(&inf);
-    long total_memoria = (inf.totalram * 8);
-    long memoria_libre = (inf.freeram * 8);
-    
-    seq_printf(archivo,"***********************************************************\n");
-    seq_printf(archivo,"*          GRUPO 20                                       *\n");
-    seq_printf(archivo,"*          PRÁCTICA 1 SOPES 2 1S 2021                     *\n");
-    seq_printf(archivo,"*                         CPU                             *\n");
-    seq_printf(archivo,"***********************************************************\n");
-    seq_printf(archivo,"SO Ubuntu 18.04.5\n");
-    seq_printf(archivo,"Memoria Total: \t %8lu KB - %8lu MB\n",total_memoria, total_memoria /1024);
-    seq_printf(archivo,"Memoria Libre: \t %8lu KB - %8lu MB\n",memoria_libre, memoria_libre /1024);
-    seq_printf(archivo,"Memoria en uso: \t %li %%\n",(memoria_libre *100)/total_memoria);
+    long total_memoria = (inf.totalram *4 );
+    long memoria_libre = (inf.freeram * 4);
+    long buffer = (inf.bufferram);
+    long cached= (global_node_page_state(NR_FILE_PAGES) * 2 )- inf.bufferram ;
+    long memoria_utilizada = total_memoria - (memoria_libre+buffer +cached);
+    long porcentaje =((memoria_utilizada *100)/total_memoria);
+    //Total Memory - (Free + Buffers + Cached) 
+
+    seq_printf(archivo,"{\n");
+    seq_printf(archivo,"\"Total\":\"%lu\",\n", total_memoria /1024); //total memoria ram
+    seq_printf(archivo,"\"Uso\":\"%lu\",\n", memoria_utilizada/1024); // total memoria consumida
+    seq_printf(archivo,"\"Porcentaje\":\"%li\"\n",porcentaje); //porcentaje de consumo
+     seq_printf(archivo,"} \n");
     return 0;
 }
 
