@@ -1,0 +1,299 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Memoria y CPU</title>
+<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="css/font-awesome.min.css"/>
+<link rel="stylesheet" type="text/css" href="css/simple-line-icons.css"/>
+<link rel="stylesheet" type="text/css" href="css/animate.css"/>
+<link rel="stylesheet" type="text/css" href="style.css"/>
+<link rel="stylesheet" type="text/css" href="css/owl.carousel.css"/>
+<link rel="stylesheet" type="text/css" href="css/owl.theme.css"/>
+<link rel="stylesheet" type="text/css" href="css/owl.transitions.css"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href='https://fonts.googleapis.com/css?family=Work+Sans:400,100,200,300,500,600,800,900' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Oleo+Script+Swash+Caps:400,700' rel='stylesheet' type='text/css'>
+
+<link rel="stylesheet" type="text/css" href="dist/jsonview.bundle.css">
+<link rel="stylesheet" href="dist/listree.min.css"/>
+
+<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body id="myPage" data-spy="scroll" data-target=".navbar" data-offset="60">
+<div class="main-header" id="main-header">
+  <nav class="navbar mynav navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar"> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button>
+        <a class="navbar-brand" href="#">Procesos</a> </div>
+      <div class="collapse navbar-collapse" id="myNavbar">
+        <ul class="nav navbar-nav navbar-right">
+          <li class="active"><a href="#banner">Home</a></li>
+          <li><a href="monitorcpu.html">Monitor CPU</a></li>
+          <li><a href="monitorram.html">Monitor RAM</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</div>
+<div class="banner" id="banner">
+  <div class="bg-overlay">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="banner-text">
+            <h2>Información acerca de los <span>Procesos</span> del CPU</h2>
+        </div>
+            <h3 id="id1"></h3>
+            
+    
+        </div>
+      </div>
+
+
+      <div class="row">
+        <div class="col-md-3 col-sm-3 col-xs-3">
+          <h3>En ejecución:</h3>
+          <h3 id="pejecucion"></h3>
+        </div>
+        <div class="col-md-3 col-sm-3 col-xs-3">
+          <h3>Suspendidos:</h3>
+          <h3 id="psuspendidos"></h3>
+        </div>
+        <div class="col-md-2 col-sm-2 col-xs-2">
+          <h3>Detenidos:</h3>
+          <h3 id="pdetenidos"></h3>
+        </div>
+        <div class="col-md-2 col-sm-2 col-xs-2">
+          <h3>Zombie:</h3>
+          <h3 id="pzombie"></h3>
+        </div>
+        <div class="col-md-2 col-sm-2 col-xs-2">
+          <h3>Total:</h3>
+          <h3 id="ptotal"></h3>
+        </div>
+      </div>
+
+         
+      <script type="text/javascript" src="dist/jsonview.bundle.js"></script>
+      <script src="dist/listree.umd.min.js"></script>
+   
+      <script>
+            listree();
+      </script>
+
+   <script type="text/javascript">
+  
+        let hijos=[];
+        let objetocpu = {};
+        let listap=[];
+        let arbol_hijos = []
+        const websocket2 = new WebSocket("ws://35.196.180.149:3000/procesos")
+  
+        websocket2.onopen = function (event){
+            console.log("successfully connected");
+        }
+  
+        websocket2.onerror = function (err){
+            console.log("Error connecting to websocket server");
+            console.log(err);
+        }
+  
+        websocket2.onmessage = function(event){
+            objetocpu = JSON.parse(event.data);
+            listap=objetocpu.ListaProcesos;
+           // console.log(listap);
+            document.getElementById("pejecucion").innerText= objetocpu.General[0].Ejecucion;
+            document.getElementById("psuspendidos").innerText= objetocpu.General[0].Suspendidos;
+            document.getElementById("pdetenidos").innerText= objetocpu.General[0].Detenidos;
+            document.getElementById("pzombie").innerText= objetocpu.General[0].Zombie;
+            document.getElementById("ptotal").innerText= objetocpu.General[0].Total;
+            
+         //   console.log("HOLAAA");
+      //console.log(listap);
+      let tablah = " <table id=\"tablaprocesoshijos\" border=\"2px\" WIDTH=\"30%\"  HEIGHT=\"30%\">"+ 
+      "<tbody id=\"contenido\">";
+
+      let tablap = " <table id=\"tablaprocesos\" border=\"4px\" >"+  
+      "<thead class=\"thead-dark\"> \n <tr>  \n<th style=\"text-align:center\" scope=\"col\">    PID   </th>"+
+      "<th style=\"text-align:center\" scope=\"col\">    NOMBRE    </th> \n <th style=\"text-align:center\"  scope=\"col\">    ESTADO   </th>"+
+      "<th style=\"text-align:center\" scope=\"col\">    %RAM    </th> \n  <th style=\"text-align:center\" scope=\"col\">    USUARIO    </th> "+
+      "<th style=\"text-align:center\" scope=\"col\">    HIJOS    </th> "+
+      " </tr> \n </thead>\n <tbody id=\"contenido\">";
+      for(let proceso of listap ){
+         let nombre = proceso.PROCESO;
+         //console.log(proceso.MEMORIA/7837);
+         tablap+= "<tr>"+
+         "<th style=\"text-align:center\" scope=\"row\">"+ proceso.PID+ "</th>"+
+         "<td> <p style=\"text-align:center\">"+proceso.PROCESO+"</p></td>"+
+         "<td> <p style=\"text-align:center\">"+proceso.ESTADO+"</p></td>"+
+         "<td> <p style=\"text-align:center\">"+proceso.MEMORIA/7837+"</p></td>"+
+         "<td> <p style=\"text-align:center\">"+proceso.USUARIO+"</p></td>"+
+         "<td> ";
+         hijos=proceso.HIJOS;
+         tablap += "<input id=\""+proceso.PID+"\""+" type=\"button\" value=\""+hijos.length+"\">";
+         /*if(hijos.length>0){
+           
+          // console.log(hijos);          
+           for (let hijo of hijos){
+          // console.log("hijo: ");
+          // console.log(hijo);
+              tablah+= "<tr>"+
+            "<th style=\"text-align:center\" scope=\"row\">"+ hijo.PID+ "</th>"+
+            "<td> <p style=\"text-align:center\">"+hijo.PROCESO+"</p></td>"+
+            "<td> <p style=\"text-align:center\">"+hijo.ESTADO+"</p></td>"+
+            "<td> <p style=\"text-align:center\">"+hijo.MEMORIA/7837+"</p></td>"+
+            "<td> <p style=\"text-align:center\">"+hijo.USUARIO+"</p></td>";
+            }
+
+            tablah+= "</tbody> </table>";
+            //tablap += tablah;
+         }*/
+         tablap+="</td>";
+         
+      }
+      tablap+= "</tbody> </table>";
+      document.getElementById("tabla").innerHTML= tablap;
+      tablap="";
+
+     /* fetch(event.data)
+    .then((res)=> {
+      return res.text();
+    })
+    .then((data) => {
+      const tree = JsonView.createTree(data);
+      JsonView.render(tree, document.querySelector('.root'));
+      JsonView.expandChildren(tree);
+    })
+    .catch((err) => {
+      console.log(err);
+    })*/
+    /* let arbol = "<ul id=\"myUL\">"
+      for(let proceso of listap ){
+        let nombre = proceso.PROCESO;
+        let pid = proceso.PID;
+        arbol_hijos = proceso.HIJOS;
+        arbol += "<li><span class=\"caret\">" + pid + ": " + nombre + "</span>";
+        
+          if(arbol_hijos.length != 0){
+            arbol += "<ul class=\"nested\">";
+
+            for(let hijos of arbol_hijos){
+              let pid_hijo = hijos.PID;
+              let nombre_hijo = hijos.PROCESO;
+
+              arbol += "<li>" + pid_hijo + ": " + nombre_hijo + "</li>"
+
+            }
+            arbol += "</ul>";
+
+          }
+          arbol += "</li>"
+      }
+      arbol += "</ul>";
+      document.getElementById("Arbol").innerHTML= arbol;
+      
+      var toggler = document.getElementsByClassName("caret");
+      var i;
+
+      for (i = 0; i < toggler.length; i++) {
+        toggler[i].addEventListener("click", function() {
+          this.parentElement.querySelector(".nested").classList.toggle("active");
+          this.classList.toggle("caret-down");
+        });
+      }
+      */
+      let arbol = "<ul class=\"listree\">" +
+              "<div id= \"contenedor\">" 
+      
+      for(let proceso of listap ){
+        let nombre = proceso.PROCESO;
+        let pid = proceso.PID;
+        arbol_hijos = proceso.HIJOS;
+        
+        arbol += "<li>" +
+            "<div class=\"listree-submenu-heading\"> " +  pid + "  " + nombre + "</div>"
+        
+          if(arbol_hijos.length != 0){
+            arbol += "<ul class=\"listree-submenu-items\">";
+
+            for(let hijos of arbol_hijos){
+              let pid_hijo = hijos.PID;
+              let nombre_hijo = hijos.PROCESO;
+
+              arbol += "<li><div class=\"listree-submenu-heading\"> "+  pid_hijo + "  " + nombre_hijo +"</div></li>";
+
+            }
+            arbol += "</ul>"
+
+          }
+         
+      }
+      arbol += "</div></ul>"
+      document.getElementById("Arbol").innerHTML= arbol;
+
+        }
+
+     
+      
+    </script>
+
+
+
+    </div>
+  </div>
+</div>
+<div style="text-align:center">
+<table id="tabla">
+        
+</table>
+</div>
+
+<div id="Arbol">
+
+</div>
+
+<div class="root"></div>
+
+<!-- Portfolio -->
+<div class="row">
+  <div class="col-md-1 col-sm-6 col-xs-12"></div>
+  <div class="col-md-10 col-sm-6 col-xs-12">
+ 
+  
+  </div>
+  <div class="col-md-1 col-sm-6 col-xs-12"></div>
+</div>
+</body>
+
+
+<footer>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4"> <span class="copyright">Copyright &copy; Marielos Herrera 2020</span> </div>
+      <div class="col-md-4">
+
+      </div>
+      <div class="col-md-4">
+        <ul class="list-inline quicklinks">
+          <li>Designed by <a href="http://w3template.com">W3 Template</a> </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+<script src="js/jquery.min.js"></script> 
+<script src="js/bootstrap.min.js"></script> 
+<script type="text/javascript" src="js/owl.carousel.min.js"></script> 
+<script type="text/javascript" src="js/jquery.countTo.js"></script> 
+<script type="text/javascript" src="js/jquery.waypoints.min.js"></script> 
+
+</html>
