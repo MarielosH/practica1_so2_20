@@ -139,8 +139,9 @@
          "<td> <p style=\"text-align:center\">"+proceso.USUARIO+"</p></td>"+
          "<td> ";
          hijos=proceso.HIJOS;
-         tablap += "<input id=\""+proceso.PID+"\""+" type=\"button\" value=\""+hijos.length+"\">";
-         tablap += "<input id=\""+proceso.PID+"\""+" type=\"button\" onClick=\"terminar(id)\" value=\""+"Terminar"+"\">";
+         tablap += "<input id=\""+proceso.PID+"\""+" type=\"button\" value=\""+hijos.length+"\">"+
+         "<td> ";
+         tablap += "<input id=\""+proceso.PID+"\""+" type=\"button\" onClick=\"myFunction(id)\" value=\""+"Terminar"+"\">";
          /*if(hijos.length>0){
            
           // console.log(hijos);          
