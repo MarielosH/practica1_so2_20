@@ -182,6 +182,8 @@
 
         }
 
+
+
      function terminar(pid){
           alert("Se terminara el proceso:" + pid.toString());
           let socket = new WebSocket("ws://35.196.180.149:3000/ws");
@@ -217,19 +219,21 @@
     </div>
   </div>
 </div>
-<div style="text-align:center">
-
-<table id="tabla">
-        
-</table>
-
-
-
+<div class="row">
+  <div class="col-md-8 p-3">
+    <div style="text-align:center">
+      <table id="tabla">          
+      </table>
+    </div>
+  </div>
+  <div class="col-md-4 p-3">
+    <div id="jstree">   
+    </div>
+  </div>
 </div>
 
-<div id="jstree">
-   
-</div>
+
+
 
 <div id="Arbol">
 
