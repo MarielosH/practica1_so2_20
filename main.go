@@ -175,11 +175,9 @@ func infocpu(conn *websocket.Conn) {
 				fmt.Println(err)
 				return
 			}
-
 		}
 
 	}
-	//time.Sleep(2000 * time.Millisecond)
 }
 
 func getCpuInfo(conn *websocket.Conn) {
@@ -240,7 +238,6 @@ func otro2() {
 	http.HandleFunc("/cpuinfo", servecpu2)
 }
 
-
 func terminar(w http.ResponseWriter, r *http.Request) {
 	log.Println("1------------")
 	fmt.Println(r.Host)
@@ -261,7 +258,7 @@ func reader(conn *websocket.Conn) {
 			//delete(clients, conn)
 			break
 		}
-		fmt.Println("eliminar proceso",string(p))
+		fmt.Println("eliminar proceso", string(p))
 		if i, err := strconv.Atoi(string(p)); err == nil {
 			proc, err := os.FindProcess(i)
 			if err != nil {

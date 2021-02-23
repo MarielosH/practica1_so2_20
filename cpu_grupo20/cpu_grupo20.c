@@ -8,8 +8,6 @@
 #include <linux/fs.h>
 #include <linux/mm.h>
 
-
-
 struct task_struct *task; //estructura definifa en sched.h para tareas /procesos 
 struct task_struct *task_child; //estructura necesaria para iterar a través de tareas secundarias
 struct list_head *list;  //estructura necesaria para recorrer la lista en cada tarea -> estructura de hijos.
@@ -18,7 +16,6 @@ int suspendidos=0;
 int detenidos=0;
 int zombies=0;
 int totalp=0;
-
 
 char * get_task_state(long state){
     switch (state)
@@ -61,8 +58,6 @@ char * get_task_state(long state){
         default:
         totalp=totalp+1;
         return "Desconocido";
-          //  sprintf(buffer, "Desconocido %ld", state);
-            //return buffer;
         }
 }
 
@@ -138,27 +133,22 @@ static int al_abrir(struct inode *inode, struct file *file){
   totalp=0;
     return single_open(file,escribir_archivo,NULL); 
 }
-
 static struct file_operations operaciones = 
 {
     .open = al_abrir,
     .read = seq_read
 };
-
 int iniciar(void){ //modulo de inicio 
     proc_create("cpu_grupo20",0,NULL,&operaciones);
     printk(KERN_INFO "%s","Cargando modulo.\n");
-    printk(KERN_INFO "%s","Hola mundo, somos el grupo 20 y este es el monitor de memoria.\n"); 
+    printk(KERN_INFO "%s","Hola mundo, somos el grupo 20 y este es el monitor de cpu.\n"); 
 
     return 0;
 }
-
 void salir(void){ //modulo salida 
-
     remove_proc_entry("cpu_grupo20",NULL);
     printk(KERN_INFO "%s","Removiendo modulo.\n");
     printk(KERN_INFO "%s","Sayonara mundo, somos el grupo 20 y este fue el monitor de cpu\n");
-
 }
 
 module_init(iniciar);

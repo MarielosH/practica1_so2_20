@@ -18,12 +18,7 @@
 <link rel="stylesheet" type="text/css" href="dist/jsonview.bundle.css">
 <link rel="stylesheet" href="dist/listree.min.css"/>
 
-<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-<!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
 
 </head>
 
@@ -117,9 +112,8 @@
             document.getElementById("pzombie").innerText= objetocpu.General[0].Zombie;
             document.getElementById("ptotal").innerText= objetocpu.General[0].Total;
             
-         //   console.log("HOLAAA");
-      //console.log(listap);
-      let tablah = " <table id=\"tablaprocesoshijos\" border=\"2px\" WIDTH=\"30%\"  HEIGHT=\"30%\">"+ 
+
+      let tablah = "<div class = \"row\"><div class = \"col-md-6\"><table id=\"tablaprocesoshijos\" border=\"2px\" WIDTH=\"30%\"  HEIGHT=\"30%\">"+ 
       "<tbody id=\"contenido\">";
 
       let tablap = " <table id=\"tablaprocesos\" border=\"4px\" >"+  
@@ -142,105 +136,49 @@
          tablap += "<input id=\""+proceso.PID+"\""+" type=\"button\" value=\""+hijos.length+"\">"+
          "<td> ";
          tablap += "<input id=\""+proceso.PID+"\""+" type=\"button\" onClick=\"terminar(id)\" value=\""+"Terminar"+"\">";
-         /*if(hijos.length>0){
-           
-          // console.log(hijos);          
-           for (let hijo of hijos){
-          // console.log("hijo: ");
-          // console.log(hijo);
-              tablah+= "<tr>"+
-            "<th style=\"text-align:center\" scope=\"row\">"+ hijo.PID+ "</th>"+
-            "<td> <p style=\"text-align:center\">"+hijo.PROCESO+"</p></td>"+
-            "<td> <p style=\"text-align:center\">"+hijo.ESTADO+"</p></td>"+
-            "<td> <p style=\"text-align:center\">"+hijo.MEMORIA/7837+"</p></td>"+
-            "<td> <p style=\"text-align:center\">"+hijo.USUARIO+"</p></td>";
-            }
 
-            tablah+= "</tbody> </table>";
-            //tablap += tablah;
-         }*/
          tablap+="</td>";
          
       }
-      tablap+= "</tbody> </table>";
+      tablap+= "</tbody> </table></div><div class = \"col-md-6\"> ";
       document.getElementById("tabla").innerHTML= tablap;
       tablap="";
 
-     /* fetch(event.data)
-    .then((res)=> {
-      return res.text();
-    })
-    .then((data) => {
-      const tree = JsonView.createTree(data);
-      JsonView.render(tree, document.querySelector('.root'));
-      JsonView.expandChildren(tree);
-    })
-    .catch((err) => {
-      console.log(err);
-    })*/
-    /* let arbol = "<ul id=\"myUL\">"
-      for(let proceso of listap ){
-        let nombre = proceso.PROCESO;
-        let pid = proceso.PID;
-        arbol_hijos = proceso.HIJOS;
-        arbol += "<li><span class=\"caret\">" + pid + ": " + nombre + "</span>";
-        
-          if(arbol_hijos.length != 0){
-            arbol += "<ul class=\"nested\">";
-
-            for(let hijos of arbol_hijos){
-              let pid_hijo = hijos.PID;
-              let nombre_hijo = hijos.PROCESO;
-
-              arbol += "<li>" + pid_hijo + ": " + nombre_hijo + "</li>"
-
-            }
-            arbol += "</ul>";
-
-          }
-          arbol += "</li>"
-      }
-      arbol += "</ul>";
-      document.getElementById("Arbol").innerHTML= arbol;
+      $('#jstree').jstree("destroy")
+            
+            let arbol = "<ul>" 
       
-      var toggler = document.getElementsByClassName("caret");
-      var i;
+            for(let proceso of listap ){
+                let nombre = proceso.PROCESO;
+                let pid = proceso.PID;
+                arbol_hijos = proceso.HIJOS;
+                
+                arbol += "<li>" +  nombre 
+                
+                if(arbol_hijos.length != 0){
+                    arbol += "<ul>";
 
-      for (i = 0; i < toggler.length; i++) {
-        toggler[i].addEventListener("click", function() {
-          this.parentElement.querySelector(".nested").classList.toggle("active");
-          this.classList.toggle("caret-down");
-        });
-      }
-      */
-      let arbol = "<ul class=\"listree\">" +
-              "<div id= \"contenedor\">" 
-      
-      for(let proceso of listap ){
-        let nombre = proceso.PROCESO;
-        let pid = proceso.PID;
-        arbol_hijos = proceso.HIJOS;
-        
-        arbol += "<li>" +
-            "<div class=\"listree-submenu-heading\"> " +  pid + "  " + nombre + "</div>"
-        
-          if(arbol_hijos.length != 0){
-            arbol += "<ul class=\"listree-submenu-items\">";
+                    for(let hijos of arbol_hijos){
+                    let pid_hijo = hijos.PID;
+                    let nombre_hijo = hijos.PROCESO;
 
-            for(let hijos of arbol_hijos){
-              let pid_hijo = hijos.PID;
-              let nombre_hijo = hijos.PROCESO;
+                    arbol += "<li>"+   nombre_hijo +"</li>";
 
-              arbol += "<li><div class=\"listree-submenu-heading\"> "+  pid_hijo + "  " + nombre_hijo +"</div></li>";
+                    }
+                    arbol += "</ul>"
 
+                }
+                arbol += "</li>"
+                
             }
-            arbol += "</ul>"
+            arbol += "</ul></div></div>"
+            //document.getElementById("jstree").innerHTML= arbol;
+            
+            $('#jstree').html(arbol)
+            
+            $('#jstree').jstree();
 
-          }
-         
-      }
-      arbol += "</div></ul>"
-      document.getElementById("Arbol").innerHTML= arbol;
+
 
         }
 
@@ -280,9 +218,17 @@
   </div>
 </div>
 <div style="text-align:center">
+
 <table id="tabla">
         
 </table>
+
+
+
+</div>
+
+<div id="jstree">
+   
 </div>
 
 <div id="Arbol">
@@ -323,5 +269,8 @@
 <script type="text/javascript" src="js/owl.carousel.min.js"></script> 
 <script type="text/javascript" src="js/jquery.countTo.js"></script> 
 <script type="text/javascript" src="js/jquery.waypoints.min.js"></script> 
-
+<!-- 4 include the jQuery library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.1/jquery.min.js"></script>
+<!-- 5 include the minified jstree source -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
 </html>

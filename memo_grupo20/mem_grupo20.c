@@ -13,11 +13,9 @@
 #include <linux/kernel_stat.h>
 
 #define BUFSIZE  150
-
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Ecribir informacion de la memoria ram.");
 MODULE_AUTHOR("Grupo20");
-
 struct sysinfo inf;
 
 static int escribir_archivo(struct seq_file * archivo, void *v){
@@ -28,7 +26,6 @@ static int escribir_archivo(struct seq_file * archivo, void *v){
     long cached= (global_node_page_state(NR_FILE_PAGES) * 2 )- inf.bufferram ;
     long memoria_utilizada = total_memoria - (memoria_libre+buffer +cached);
     long porcentaje =((memoria_utilizada *100)/total_memoria);
-    //Total Memory - (Free + Buffers + Cached) 
 
     seq_printf(archivo,"{\n");
     seq_printf(archivo,"\"Total\":\"%lu\",\n", total_memoria /1024); //total memoria ram
@@ -52,18 +49,14 @@ static struct file_operations operaciones =
 int iniciar(void){ //modulo de inicio 
     proc_create("mem_grupo20",0,NULL,&operaciones);
     printk(KERN_INFO "%s","Cargando modulo.\n");
-    printk(KERN_INFO "%s","Hola mundo, somos el grupo 20 y este es el monitor de memoria.\n");
-   
+    printk(KERN_INFO "%s","Hola mundo, somos el grupo 20 y este es el monitor de memoria.\n");   
     return 0;
 }
 
 void salir(void){ //modulo salida 
-
     remove_proc_entry("mem_grupo20",NULL);
     printk(KERN_INFO "%s","Hola mundo, somos el grupo 20 y este es el monitor de memoria.\n");
     printk(KERN_INFO "%s","Sayonara mundo, somos el grupo 20 y este fue el monitor de memoria\n");
-
-
 }
 
 module_init(iniciar);
